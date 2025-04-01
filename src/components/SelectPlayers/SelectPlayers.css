@@ -1,0 +1,42 @@
+.select-number-of-players-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.players-selection-title {
+  font-size: var(--title-font-size);
+  font-weight: var(--title-font-weight);
+  margin: 40px 0px;
+}
+
+.select-number-of-players {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.select-color-of-players {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.select-number-of-players-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: var(--secondary-color);
+  color: var(--accent-color);
+  border-radius: var(--border-radius);
+}
+
+.select-number-of-players-button:hover {
+  transform: scale(1.3);
+}

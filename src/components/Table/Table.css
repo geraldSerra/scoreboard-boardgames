@@ -1,0 +1,23 @@
+.table-container {
+  height: fit-content;
+  border-radius: 10px;
+  background-color: var(--light-gray-color);
+  margin: var(--margin-layout);
+  min-height: 180px;
+}
+
+.scoring-table {
+  width: 100%;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.scoring-th {
+  background-color: var(--gray-color);
+  padding: 8px;
+  font-size: 18px;
+}

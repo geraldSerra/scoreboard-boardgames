@@ -1,0 +1,39 @@
+.options-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: black;
+  margin: var(--margin-layout);
+}
+
+.options-icons-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: var(--light-gray-color);
+  padding: 4px;
+  border-radius: 50px;
+}
+
+.option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  /* border: solid 2px gray; */
+  padding: 8px;
+  border-radius: 50px;
+  transition: all 0.2s ease-in-out;
+}
+
+.selected {
+  /* border: solid 4px gray; */
+  background-color: var(--gray-color);
+  transform: scale(1.3);
+}
+
+.option-label {
+  text-transform: capitalize;
+  font-weight: bold;
+}

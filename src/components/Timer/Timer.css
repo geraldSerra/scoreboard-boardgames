@@ -1,0 +1,17 @@
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0px;
+  gap: 40px;
+}
+
+.timer-player {
+  display: flex;
+  justify-content: center;
+}
+
+.timer-time {
+  font-size: 50px;
+}
