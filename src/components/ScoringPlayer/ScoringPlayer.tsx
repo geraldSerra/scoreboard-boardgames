@@ -1,33 +1,27 @@
 import Meeple from "../../assets/Icons/Meeple";
 import "./ScoringPlayer.css";
 
-const ScoringPlayer = ({
-  scoringPlayers,
-  addPlayer,
-  setScoringPlayers,
-}: any) => {
-  const handlePlayerSelected = (player: any) => {
-    console.log("scoring player", scoringPlayers);
+type ScoringPlayerType = {
+  color: "red" | "blue" | "green" | "yellow" | "black" | "pink";
+  isPlayerTurn: boolean;
+  player: 1 | 2 | 3 | 4 | 5 | 6;
+  selected: boolean;
+  time: string;
+};
 
-    setScoringPlayers((prev: any) => {
-      return prev.map((item: any) => {
-        if (item.player === player.player) {
-          return { ...item, selected: !item.selected };
-        } else return item;
-      });
-    });
-  };
-
-  console.log("scoring players", scoringPlayers);
+const ScoringPlayer: React.FC<{
+  players: ScoringPlayerType[];
+  selectPlayer: (player: ScoringPlayerType) => void;
+}> = ({ players, selectPlayer }) => {
+  console.log("scoring players Component");
 
   return (
     <div className="scoring-player-container">
-      {scoringPlayers.map((player: any) => (
+      {players.map((player: any) => (
         <div
           className={`scoring-player ${player.selected ? "selected" : ""}`}
           onClick={() => {
-            addPlayer(player.player);
-            handlePlayerSelected(player);
+            selectPlayer(player);
           }}
         >
           <Meeple color={player.color} width={"30px"} height={"30px"} />

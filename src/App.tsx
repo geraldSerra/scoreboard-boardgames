@@ -2,61 +2,15 @@ import { useState } from "react";
 import Timer from "./components/Timer/Timer";
 import SelectPlayers from "./components/SelectPlayers/SelectPlayers";
 import Chip from "./components/Chips/Chip";
-import Pause from "./assets/Icons/Pause";
-import Score from "./assets/Icons/Score";
-import Play from "./assets/Icons/Play";
-import ScoreTable from "./components/ScoreTable/ScoreTable";
+import ScoreBoard from "./components/ScoreBoard/ScoreBorad";
 import AnchorDrawer from "./components/Drawer/Drawer";
 import Dialog from "./components/Dialog/Dialog";
+import Player from "./types/playerType";
+import ActionButton from "./components/ActionButton/ActionButton";
 import "./App.css";
 
-interface playerInterface {
-  player: number;
-  color: string;
-  time: string;
-  isPlayerTurn: boolean;
-}
-
-const ChipsIndicators = ({ players }: any) => {
-  return (
-    <div className="chips-container" style={{ height: "100px" }}>
-      {players
-        .filter((player: any) => !player.isPlayerTurn)
-        .map((player: any) => (
-          <Chip color={player.color} time={player.time} />
-        ))}
-    </div>
-  );
-};
-
-const Actions = ({ isPaused, setPause, handleOpenScoringTable }: any) => {
-  return (
-    <div
-      style={{ display: "flex", justifyContent: "space-between", gap: "100px" }}
-    >
-      <div>
-        <div onClick={() => setPause((prev: boolean) => !prev)}>
-          {isPaused ? (
-            <Play color="#00c9aa" width="30px" height="30px" />
-          ) : (
-            <Pause color="#00c9aa" width="30px" height="30px" />
-          )}
-        </div>
-        <div>{isPaused ? "Continue" : "Pause"}</div>
-      </div>
-
-      <div onClick={handleOpenScoringTable(true)}>
-        <div>
-          <Score color="#00c9aa" width="30px" height="30px" />
-        </div>
-        <div>Score</div>
-      </div>
-    </div>
-  );
-};
-
 function App() {
-  const [players, setPlayers] = useState<playerInterface[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [arePlayersSelected, setArePlayersSelected] = useState(false);
   const [inputTime, setInputTime] = useState("10:00");
   const [initialTime, setInitialTime] = useState("");
@@ -65,8 +19,6 @@ function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [openScoringTable, setOpenScoringTable] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-
-  console.log("drawer", openScoringTable);
 
   const addInitialTimeToPlayers = () => {
     setPlayers((prev) => {
@@ -106,18 +58,18 @@ function App() {
     }
   };
 
-  const handleOpenScoringTable =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
+  const handlePause = () => {
+    setIsPaused((prev) => !prev);
+    console.log('PAUSE')
+  };
 
-      setOpenScoringTable(open);
-    };
+  const handleOpenScore = () => {
+    setOpenScoringTable(true);
+  };
+
+  const handleCloseScore = () => {
+    setOpenScoringTable(false);
+  };
 
   return (
     <div className="App">
@@ -167,7 +119,13 @@ function App() {
               justifyContent: "space-between",
             }}
           >
-            <ChipsIndicators players={players} />
+            <div className="chips-container" style={{ height: "100px" }}>
+              {players
+                .filter((player: any) => !player.isPlayerTurn)
+                .map((player: any) => (
+                  <Chip color={player.color} time={player.time} />
+                ))}
+            </div>
 
             <div style={{ height: "fit-content", margin: "20px 0" }}>
               Player {players.filter((player) => player.isPlayerTurn)[0].player}
@@ -191,11 +149,25 @@ function App() {
               Finish game?
             </div>
             <div style={{ height: "fit-content", margin: "20px 0" }}>
-              <Actions
-                isPaused={isPaused}
-                setPause={setIsPaused}
-                handleOpenScoringTable={handleOpenScoringTable}
-              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "100px",
+                }}
+              >
+                <ActionButton
+                  variant="pause"
+                  action={isPaused}
+                  onClick={handlePause}
+                  width="30px"
+                />
+                <ActionButton
+                  variant="score"
+                  onClick={handleOpenScore}
+                  width="30px"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -203,9 +175,9 @@ function App() {
       {isGameStarted ? (
         <AnchorDrawer
           open={openScoringTable || isGameFinished}
-          handleClose={handleOpenScoringTable}
+          handleClose={handleCloseScore}
         >
-          <ScoreTable
+          <ScoreBoard
             mode={isGameFinished ? "gameFinished" : "gameInProgress"}
             players={players}
           />

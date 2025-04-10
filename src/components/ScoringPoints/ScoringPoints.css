@@ -1,11 +1,3 @@
-.scoring-points-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin: var(--margin-layout);
-}
-
 .input {
   all: unset;
   height: 50px;
@@ -20,17 +12,4 @@
 .input:focus {
   border: none;
   border: 2px solid var(--gray-color);
-}
-
-.submit {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  height: 50px;
-  width: 100%;
-  border-radius: 10px;
-  font-weight: bold;
-  background-color: var(--accent-color);
-  background-color: rgba(0, 0, 0, 0.785);
 }

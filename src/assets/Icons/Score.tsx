@@ -10,7 +10,7 @@ const Score = ({ color, width, height }: any) => {
       <svg
         width={width}
         height={height}
-        fill='none'
+        fill="none"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
       >

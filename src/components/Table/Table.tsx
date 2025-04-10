@@ -3,8 +3,11 @@ import Road from "../../assets/Icons/Road";
 import City from "../../assets/Icons/City";
 import Monastery from "../../assets/Icons/Monastery";
 import "./Table.css";
-import Garden from "../../assets/Icons/Graden";
+import Garden from "../../assets/Icons/Garden";
 import Field from "../../assets/Icons/Field";
+import ScoringOptionType from "../../types/scoringOptionType";
+import WinPercentage from "../WinPercentage/WinPercentage";
+import { useState } from "react";
 
 const optionIcons: any = {
   road: <Road color="black" width="30px" height="30px" />,
@@ -14,10 +17,35 @@ const optionIcons: any = {
   field: <Field color="black" width="30px" height="30px" />,
 };
 
-let totalArray: any = [];
+let totalArray: { playerId: 1 | 2 | 3 | 4 | 5 | 6; points: number }[] = [];
 
-const Table = ({ mode, scoringPlayers, score, options }: any) => {
-  totalArray = scoringPlayers.map((player: any) => {
+type ScoringPlayerType = {
+  color: "red" | "blue" | "green" | "yellow" | "black" | "pink";
+  isPlayerTurn: boolean;
+  player: 1 | 2 | 3 | 4 | 5 | 6;
+  selected: boolean;
+  time: string;
+};
+
+type ScoreType = {
+  option: string;
+  playersId: number[];
+  points: string;
+};
+
+let finalScore: any = [];
+
+let scoreByScorable: any = [];
+
+const Table: React.FC<{
+  mode: string;
+  scoringPlayers: ScoringPlayerType[];
+  score: ScoreType[];
+  options: ScoringOptionType[];
+}> = ({ mode, scoringPlayers, score, options }) => {
+  console.log("Table Component");
+
+  totalArray = scoringPlayers.map((player: ScoringPlayerType) => {
     return { playerId: player.player, points: 0 };
   });
 
@@ -25,25 +53,58 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
     return {
       playerId: total.playerId,
       points: score
-        .filter((item: any) => item.playersId.includes(total.playerId))
+        .filter((item: ScoreType) => item.playersId.includes(total.playerId))
         .reduce(
-          (acc: any, current: any) => acc + +current.points,
+          (acc: number, current: ScoreType) => acc + +current.points,
           +total.points ? +total.points : 0
         ),
     };
   });
 
-  const FinalScore = () => {
-    let finalScore = [];
+  // const [percentage, setPercentage] = useState<any>([]);
 
+  // if (mode === "gameFinished") {
+  //   setPercentage(transformScores(finalScore));
+  // }
+
+  // function transformScores(players: any) {
+  //   const scorableMap: any = {};
+
+  //   players.forEach(({ playerId, color, points }: any) => {
+  //     Object.entries(points).forEach(([scorable, value]) => {
+  //       if (!scorableMap[scorable]) {
+  //         scorableMap[scorable] = {
+  //           scorable,
+  //           players: [],
+  //           total: 0,
+  //         };
+  //       }
+
+  //       scorableMap[scorable].players.push({
+  //         player: playerId,
+  //         color,
+  //         points: value,
+  //       });
+
+  //       scorableMap[scorable].total += value;
+  //     });
+  //   });
+
+  //   // Convertir el objeto en un array
+  //   return Object.values(scorableMap);
+  // }
+
+  const FinalScore = () => {
     //create final structure
-    finalScore = scoringPlayers.map((player: any) => {
-      let optionScore = score.filter((item: any) =>
+    finalScore = scoringPlayers.map((player: ScoringPlayerType) => {
+      let scoreFilteredByPlayer: ScoreType[] = score.filter((item: ScoreType) =>
         item.playersId.includes(player.player)
       );
 
-      if (optionScore.length) {
-        optionScore = optionScore.map((item: any) => {
+      let optionScore: any = [];
+
+      if (scoreFilteredByPlayer.length) {
+        optionScore = scoreFilteredByPlayer.map((item: ScoreType) => {
           return { [item.option]: item.points };
         });
 
@@ -56,8 +117,6 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
         }, {});
       }
 
-      // console.log("TEST", optionScore);
-
       return {
         playerId: player.player,
         color: player.color,
@@ -68,10 +127,9 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
       };
     });
 
-    //order the positions
-    finalScore = finalScore.sort((a: any, b: any) => b.total - a.total);
+    console.log(scoreByScorable);
 
-    // console.log("FINAL", finalScore);
+    finalScore = finalScore.sort((a: any, b: any) => b.total - a.total);
 
     return (
       <div>
@@ -79,8 +137,8 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
           <thead>
             <tr style={{ backgroundColor: "gray" }}>
               <th>Results</th>
-              {options.map((option: any) => (
-                <th key={option.name}>{optionIcons[option.name]}</th>
+              {options.map((option: ScoringOptionType) => (
+                <th key={option.scorable}>{optionIcons[option.scorable]}</th>
               ))}
               <th>Total</th>
             </tr>
@@ -92,11 +150,11 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
                   <td>
                     <Meeple color={item.color} width="30px" height="30px" />
                   </td>
-                  {options.map((option: any) => {
-                    if (Object.keys(item.points).includes(option.name)) {
+                  {options.map((option: ScoringOptionType) => {
+                    if (Object.keys(item.points).includes(option.scorable)) {
                       return (
                         <td style={{ textAlign: "center" }}>
-                          {item.points[option.name]}
+                          {item.points[option.scorable]}
                         </td>
                       );
                     } else return <td style={{ textAlign: "center" }}>0</td>;
@@ -141,7 +199,9 @@ const Table = ({ mode, scoringPlayers, score, options }: any) => {
           ))}
         </table>
       ) : (
-        <FinalScore />
+        <>
+          <FinalScore />
+        </>
       )}
     </div>
   );
