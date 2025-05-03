@@ -1,23 +1,60 @@
 .table-container {
-  height: fit-content;
-  border-radius: 10px;
-  background-color: var(--light-gray-color);
   margin: var(--margin-layout);
-  min-height: 180px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .scoring-table {
   width: 100%;
   text-align: center;
-  border-radius: 10px 10px 0 0;
   border-collapse: collapse;
+  height: fit-content;
   overflow: hidden;
-  font-size: 18px;
-  font-weight: bold;
+  background-color: var(--light-gray-color);
+  min-height: 180px;
+  border-radius: 10px;
+}
+
+.scoring-tr {
+  height: 60px;
+  background-color: var(--gray-color);
 }
 
 .scoring-th {
+  height: 50px;
+  font-size: 16px;
+}
+
+.final-tr {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.final-th {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
   background-color: var(--gray-color);
-  padding: 8px;
+  height: 60px;
+  font-size: 11px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.final-td {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.winner {
+  background-color: bisque;
+  border: 3px solid #f7c566;
+  height: 60px;
   font-size: 18px;
 }

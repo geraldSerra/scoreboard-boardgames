@@ -1,5 +1,11 @@
+const color = {
+  red: "#E72929",
+  yellow: "#FFD63A",
+  green: "#4CAF50",
+};
+
 const CircularProgress = ({
-  size = 250,
+  size = 270,
   progress = 75,
   strokeWidth = 10,
   children,
@@ -7,6 +13,15 @@ const CircularProgress = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
+  let strokeColor = "";
+
+  if (progress <= 20) {
+    strokeColor = color.red;
+  } else if (progress <= 50 && progress > 20) {
+    strokeColor = color.yellow;
+  } else {
+    strokeColor = color.green;
+  }
 
   return (
     <div
@@ -34,7 +49,7 @@ const CircularProgress = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={progress > 20 ? "#4CAF50" : "red"}
+          stroke={strokeColor}
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}

@@ -1,5 +1,5 @@
 type Player = {
-  player: number;
+  playerId: number;
   color: string;
   time: string;
   isPlayerTurn: boolean;

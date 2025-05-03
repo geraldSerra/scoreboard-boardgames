@@ -7,20 +7,9 @@ import Table from "../Table/Table";
 import ScoringOptionType from "../../types/scoringOptionType";
 //CSS
 import "./ScoreBoard.css";
-
-type ScoreType = {
-  option: string;
-  playersId: number[];
-  points: string;
-};
-
-type ScoringPlayerType = {
-  color: "red" | "blue" | "green" | "yellow" | "black" | "pink";
-  isPlayerTurn: boolean;
-  player: 1 | 2 | 3 | 4 | 5 | 6;
-  selected: boolean;
-  time: string;
-};
+import Player from "../../types/playerType";
+import ScoreType from "../../types/scoreType";
+import ScoringType from "../../types/scoringPlayerType";
 
 const options: ScoringOptionType[] = [
   { scorable: "city", selected: false },
@@ -30,24 +19,37 @@ const options: ScoringOptionType[] = [
   { scorable: "field", selected: false },
 ];
 
-let initialPlayers: any = [];
+let initialPlayers: ScoringType[] = [];
 
-const ScoreBoard = ({ mode, players }: any) => {
-  initialPlayers = players.map((player: any) => {
+type ScoreBoardProps = {
+  mode: string;
+  players: Player[];
+  score: ScoreType[];
+  handleScore: (score: ScoreType[]) => void;
+  handleTotalScore: (score: ScoreType[], players: Player[]) => void;
+};
+
+const ScoreBoard = ({
+  mode,
+  players,
+  score,
+  handleScore,
+  handleTotalScore,
+}: ScoreBoardProps) => {
+  initialPlayers = players.map((player: Player) => {
     return { ...player, selected: false };
   });
 
-  const [score, setScore] = useState<ScoreType[]>([]);
   const [scoringPlayers, setScoringPlayers] =
-    useState<ScoringPlayerType[]>(initialPlayers);
+    useState<ScoringType[]>(initialPlayers);
   const [scoringPoints, setScoringPoints] = useState<string>("");
   const [scoringOptions, setScoringOptions] =
     useState<ScoringOptionType[]>(options);
 
-  const handlePlayerSelected = (selectedPlayer: any) => {
-    setScoringPlayers((prev: any) => {
-      return prev.map((item: any) => {
-        if (item.player === selectedPlayer.player) {
+  const handlePlayerSelected = (selectedPlayer: ScoringType) => {
+    setScoringPlayers((prev: ScoringType[]) => {
+      return prev.map((item: ScoringType) => {
+        if (item.playerId === selectedPlayer.playerId) {
           return { ...item, selected: !item.selected };
         } else return item;
       });
@@ -75,20 +77,24 @@ const ScoreBoard = ({ mode, players }: any) => {
   const handleSummit = () => {
     if (!readyToScore()) return;
 
-    setScore([
+    const newScore = [
       ...score,
       {
         playersId: scoringPlayers
-          .filter((player: any) => player.selected)
-          .map((player: any) => player.player),
-        option: scoringOptions.filter((option: any) => option.selected)[0]
-          .scorable,
+          .filter((player: ScoringType) => player.selected)
+          .map((player: ScoringType) => player.playerId),
+        option: scoringOptions.filter(
+          (option: ScoringOptionType) => option.selected
+        )[0].scorable,
         points: scoringPoints,
       },
-    ]);
+    ];
+
+    handleScore(newScore);
     setScoringPoints("");
     setScoringOptions(options);
     setScoringPlayers(initialPlayers);
+    handleTotalScore(newScore, players);
   };
 
   return (
@@ -99,7 +105,7 @@ const ScoreBoard = ({ mode, players }: any) => {
       {mode === "gameInProgress" && (
         <>
           <ScoringPlayer
-            players={scoringPlayers}
+            scoringPlayers={scoringPlayers}
             selectPlayer={handlePlayerSelected}
           />
           <ScoringOptions

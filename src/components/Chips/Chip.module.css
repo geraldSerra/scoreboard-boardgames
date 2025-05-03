@@ -1,0 +1,55 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 110px;
+  height: 100%;
+  color: white;
+  border-radius: 10px;
+  gap: 4px;
+  border: 2px solid var(--secondary-color);
+  overflow: hidden;
+}
+
+.points {
+  display: flex;
+  border-radius: 18px 18px 0px 0px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  box-sizing: border-box;
+  padding-top: 15px;
+  gap: 12px;
+}
+
+.icon {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  width: 25px;
+  height: 25px;
+  border-radius: 20px;
+  transform: scale(2.4);
+  margin-bottom: 70px;
+}
+
+.time {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  width: 100%;
+  height: 28px;
+  background-color: var(--secondary-color);
+  overflow: hidden;
+}
+
+.score {
+  font-size: 22px;
+  font-weight: bold;
+}

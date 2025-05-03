@@ -11,7 +11,7 @@ const AnchorDrawer: React.FC<{
   children: any;
 }> = ({ open, handleClose, children }: any) => {
   return (
-    <div>
+    <div style={{ height: "100vh" }}>
       <Drawer
         anchor={"bottom"}
         open={open}
@@ -20,11 +20,9 @@ const AnchorDrawer: React.FC<{
         }}
         onClose={() => handleClose()}
         sx={{
-          minHeight: "90vh",
-          height: "100vh",
           maxWidth: "100vw",
+          height: "100vh",
           overflowX: "hidden",
-          borderRadius: "20px 20px 20px 0 !important",
           backgroundColor: "transparent",
         }}
       >
@@ -36,6 +34,9 @@ const AnchorDrawer: React.FC<{
             alignItems: "center",
             pt: "10px",
             gap: "10px",
+            borderRadius: "20px 20px 20px 0 !important",
+            overflow: "hidden",
+            height: "100vh",
           }}
         >
           <Box
@@ -43,7 +44,7 @@ const AnchorDrawer: React.FC<{
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
-              width: "40px",
+              width: "35px",
               height: "40px",
               backgroundColor: "white",
               borderRadius: "40px",

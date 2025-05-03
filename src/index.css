@@ -7,8 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --margin-layout: 0px 20px;
+  --margin-layout: 0px 15px;
 }
 
 :root {
@@ -20,8 +19,8 @@ body {
   --black-color: #212121;
   --light-gray-color: #f4f4f2;
   --gray-color: #bbbfca;
-  --title-font-size: 28px;
-  --title-font-weight: bold;
+  --title-font-size: 16px;
+  --title-font-weight: 500;
   --border-radius: 10px;
 }
 

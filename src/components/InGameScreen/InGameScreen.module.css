@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  margin: var(--margin-layout);
+}
+
+.chips {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  margin-top: 80px;
+}
+
+.actions {
+  display: flex;
+  gap: 100px;
+  margin-bottom: 40px;
+}

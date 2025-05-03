@@ -1,0 +1,38 @@
+.select-screen-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  padding: var(--margin-layout);
+  margin: 20px;
+  padding: 20px;
+  gap: 15px;
+}
+
+.start {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  width: 260px;
+  height: 50px;
+  font-size: 20px;
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
+  transition: all 0.4s;
+}
+
+.startDisabled {
+  background-color: transparent;
+  color: var(--secondary-color); 
+}
+
+.title-screen {
+  font-size: 26px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}

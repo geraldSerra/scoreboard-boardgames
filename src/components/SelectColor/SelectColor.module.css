@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 15px;
+  gap: 10px;
+}
+
+.list {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  gap: 10px;
+  margin: var(--margin-layout);
+}
+
+.select-color-of-players {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 100%;
+  background-color: transparent;
+  /* border: 2px solid var(--secondary-color); */
+  border-radius: 10px;
+}
+
+.buttonSelected {
+  transform: scale(1.1);
+  background-color: var(--secondary-color);
+}
+
+.indicator {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.reset {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-size: 12px;
+  padding: 2px 12px 2px 8px;
+  border: 2px solid var(--secondary-color);
+  border-radius: 20px;
+  align-self: center;
+}

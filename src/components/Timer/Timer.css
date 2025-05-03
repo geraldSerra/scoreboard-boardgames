@@ -3,8 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 20px 0px;
-  gap: 40px;
+  gap: 20px;
 }
 
 .timer-player {
@@ -13,5 +12,5 @@
 }
 
 .timer-time {
-  font-size: 50px;
+  font-size: 70px;
 }

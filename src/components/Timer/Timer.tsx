@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import TurnButton from "../TurnButton/TurnButton";
-import "./Timer.css";
 import CircularProgress from "../ProgressBar/CicularProgressBar";
+import "./Timer.css";
 
 const parseTime = (timeString: string) => {
   const [minutes, seconds] = timeString.split(":").map(Number);
@@ -14,10 +14,10 @@ const formatTime = (seconds: number) => {
   return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
-const CountdownTimer = ({
+const Timer = ({
   currentPlayer,
   initialTime,
-  setPlayers,
+  setPlayersInfo,
   handleChangePlayerTurn,
   isPaused,
 }: any) => {
@@ -28,7 +28,7 @@ const CountdownTimer = ({
 
   const handleStart = () => {
     timer.current = setInterval(() => {
-      setPlayers((prev: any) =>
+      setPlayersInfo((prev: any) =>
         prev?.map((player: any) => {
           const parsedTime = parseTime(player.time);
 
@@ -43,8 +43,6 @@ const CountdownTimer = ({
         })
       );
     }, 1000);
-
-    console.log("new timer", timer.current);
   };
 
   useEffect(() => {
@@ -63,7 +61,7 @@ const CountdownTimer = ({
   return (
     <div className="timer-container">
       <div className="timer-player">
-        <CircularProgress progress={progress}>
+        <CircularProgress strokeWidth={12} progress={progress}>
           <TurnButton
             currentPlayer={currentPlayer}
             onClick={handleChangePlayerTurn}
@@ -76,4 +74,4 @@ const CountdownTimer = ({
   );
 };
 
-export default CountdownTimer;
+export default Timer;
