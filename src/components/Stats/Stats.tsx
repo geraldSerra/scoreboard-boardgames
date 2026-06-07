@@ -1,5 +1,4 @@
 import getColor from "../../utils/getColor";
-import styles from "./Stats.module.css";
 
 type StatsProps = {
   scorable: string;
@@ -8,9 +7,11 @@ type StatsProps = {
 
 const Stats = ({ scorable, data }: StatsProps) => {
   return (
-    <div className={styles.container}>
-      <div className={styles.scorable}>{scorable}</div>
-      <div className={styles.bar}>
+    <div className="flex flex-col items-center gap-[15px] rounded-[20px] bg-lightgray p-5">
+      <div className="w-full justify-start text-left text-[20px] font-bold capitalize">
+        {scorable}
+      </div>
+      <div className="flex h-[15px] w-full overflow-hidden rounded-[10px]">
         {data.map((item: any) => (
           <div
             style={{
@@ -20,9 +21,9 @@ const Stats = ({ scorable, data }: StatsProps) => {
           ></div>
         ))}
       </div>
-      <div className={styles.percentageContainer}>
+      <div className="flex w-full items-center justify-between text-black">
         {data.map((item: any) => (
-          <div className={styles.percentage}>
+          <div className="flex items-center gap-1 text-[11px] font-medium">
             <div
               style={{
                 width: "8px",

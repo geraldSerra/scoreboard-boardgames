@@ -1,32 +1,49 @@
-import * as React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
+type DialogProps = {
+  open: boolean;
+  title: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
 
-export default function AlertDialog({ open, setOpen, setIsGameFinished }: any) {
+export default function AlertDialog({
+  open,
+  title,
+  confirmLabel = "Sí",
+  cancelLabel = "No",
+  onConfirm,
+  onCancel,
+}: DialogProps) {
+  if (!open) return null;
+
   return (
-    <>
-      <Dialog
-        open={open}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-6"
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-[340px] rounded-[16px] bg-white p-6 text-blacksoft shadow-xl"
+        onClick={(e) => e.stopPropagation()}
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Do you want to finish the game?"}
-        </DialogTitle>
-        <DialogActions style={{ justifyContent: "center", gap: "100px" }}>
-          <div onClick={() => setOpen(false)}>No</div>
-          <div
-            onClick={() => {
-              setIsGameFinished(true);
-              setOpen(false);
-            }}
-            autoFocus
+        <div className="mb-6 text-center text-lg font-bold">{title}</div>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex h-[48px] flex-1 items-center justify-center rounded-[12px] border-2 border-lightgray font-bold text-graysoft"
           >
-            Yes
-          </div>
-        </DialogActions>
-      </Dialog>
-    </>
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex h-[48px] flex-1 items-center justify-center rounded-[12px] bg-accent font-bold text-primary"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

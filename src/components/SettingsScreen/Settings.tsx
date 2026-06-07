@@ -1,87 +1,211 @@
 import { useCallback, useState } from "react";
 import SelectTime from "../SelectTime/SelectTime";
 import SelectQuantity from "../SelectQuantity/SelectQuantity";
-import SelectColorType from "../../types/selectColorType";
-import SelectColor from "../SelectColor/SelectColor";
-import "./Settings.css";
+import PlayerRow from "../PlayerRow/PlayerRow";
+import ExpansionSelector from "../Expansions/ExpansionSelector";
+import Stepper from "../Stepper/Stepper";
+import Expansion from "../../types/expansionType";
+import { cloneExpansions } from "../../data/expansions";
 
-const SelectPlayers = ({ handleSettings }: any) => {
-  console.log("<SettingsScreen rendered");
+const STEPS = ["Jugadores", "Expansiones", "Tiempo"];
 
-  const [quantityOfPlayers, setQuantityOfPlayers] = useState<number>(2);
-  const [colorOfPlayers, setColorOfPlayers] = useState<SelectColorType[]>([]);
-  const [timeOfPlayers, setTimeOfPlayers] = useState<number>(15);
+type PlayerDraft = {
+  playerId: number;
+  name: string;
+  color: string;
+};
 
-  const isReadyToStart = colorOfPlayers.length === quantityOfPlayers;
+const makePlayers = (quantity: number, prev: PlayerDraft[] = []): PlayerDraft[] =>
+  Array.from({ length: quantity }, (_, i) => ({
+    playerId: i + 1,
+    name: prev[i]?.name ?? "",
+    color: prev[i]?.color ?? "",
+  }));
 
-  const handleQuantity = useCallback(
-    (quantity: number) => {
-      if (quantity === quantityOfPlayers) return;
-      setQuantityOfPlayers(quantity);
-      setColorOfPlayers([]);
-    },
-    [quantityOfPlayers]
+const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
+  const [quantityOfPlayers, setQuantityOfPlayers] = useState<number>(
+    initialConfig?.quantity ?? 2
   );
-
-  const handleColor = useCallback(
-    function handleColor(color: string) {
-      if (color === "reset") {
-        setColorOfPlayers([]);
-        return;
-      }
-
-      if (quantityOfPlayers === colorOfPlayers.length) return;
-
-      setColorOfPlayers((prev: SelectColorType[]) => {
-        return [...prev, { playerId: prev.length + 1, color: color }];
-      });
-    },
-    [colorOfPlayers.length, quantityOfPlayers]
+  const [players, setPlayers] = useState<PlayerDraft[]>(() =>
+    makePlayers(initialConfig?.quantity ?? 2, initialConfig?.players ?? [])
   );
+  const [timeOfPlayers, setTimeOfPlayers] = useState<number>(
+    initialConfig?.time ?? 15
+  );
+  const [expansions, setExpansions] = useState<Expansion[]>(() =>
+    initialConfig?.expansions
+      ? initialConfig.expansions.map((expansion: Expansion) => ({
+          ...expansion,
+          pieces: expansion.pieces.map((piece) => ({ ...piece })),
+        }))
+      : cloneExpansions()
+  );
+  const [step, setStep] = useState<number>(0);
 
-  const handleTime = useCallback(function handleTime(time: number) {
+  const isReadyToStart = players.every((player) => player.color !== "");
+  const canGoNext = step !== 0 || isReadyToStart;
+
+  const handleNext = () => {
+    if (!canGoNext) return;
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
+
+  const handleBack = () => setStep((s) => Math.max(s - 1, 0));
+  const handleStepClick = (index: number) => setStep(index);
+
+  const handleQuantity = useCallback((quantity: number) => {
+    setQuantityOfPlayers(quantity);
+    setPlayers((prev) => makePlayers(quantity, prev));
+  }, []);
+
+  const handleName = useCallback((index: number, name: string) => {
+    setPlayers((prev) =>
+      prev.map((player, i) => (i === index ? { ...player, name } : player))
+    );
+  }, []);
+
+  const handleColor = useCallback((index: number, color: string) => {
+    setPlayers((prev) =>
+      prev.map((player, i) =>
+        i === index
+          ? { ...player, color: player.color === color ? "" : color }
+          : player
+      )
+    );
+  }, []);
+
+  const handleTime = useCallback((time: number) => {
     setTimeOfPlayers(time);
   }, []);
+
+  const handleToggleExpansion = useCallback((expansionId: string) => {
+    setExpansions((prev) =>
+      prev.map((expansion) =>
+        expansion.id === expansionId && !expansion.required
+          ? { ...expansion, enabled: !expansion.enabled }
+          : expansion
+      )
+    );
+  }, []);
+
+  const handleTogglePiece = useCallback(
+    (expansionId: string, pieceId: string) => {
+      setExpansions((prev) =>
+        prev.map((expansion) =>
+          expansion.id === expansionId
+            ? {
+                ...expansion,
+                pieces: expansion.pieces.map((piece) =>
+                  piece.id === pieceId
+                    ? { ...piece, enabled: !piece.enabled }
+                    : piece
+                ),
+              }
+            : expansion
+        )
+      );
+    },
+    []
+  );
 
   const handleStart = () => {
     if (!isReadyToStart) return;
 
-    const settings = colorOfPlayers.map((item: SelectColorType, index) => {
-      return {
-        ...item,
-        time: `${timeOfPlayers}:00`,
-        isPlayerTurn: index === 0 ? true : false,
-      };
-    });
+    const settings = players.map((player, index) => ({
+      playerId: index + 1,
+      name: player.name.trim() || `Jugador ${index + 1}`,
+      color: player.color,
+      time: `${timeOfPlayers}:00`,
+      isPlayerTurn: index === 0,
+    }));
 
-    handleSettings(settings);
-  };
-
-  const Title = () => {
-    return <div className="title-screen">Settings</div>;
-  };
-
-  const Start = () => {
-    return (
-      <div
-        className={isReadyToStart ? "start" : "start startDisabled"}
-        onClick={handleStart}
-      >
-        START
-      </div>
-    );
+    handleSettings(settings, { expansions });
   };
 
   return (
-    <div className="select-screen-container">
-      <Title />
-      <SelectQuantity
-        quantity={quantityOfPlayers}
-        handleSelect={handleQuantity}
-      />
-      <SelectColor players={colorOfPlayers} handleSelect={handleColor} />
-      <SelectTime time={timeOfPlayers} handleSelect={handleTime} />
-      <Start />
+    <div className="mx-auto box-border flex h-screen w-screen max-w-[480px] flex-col px-4 py-6">
+      <div className="mb-4 text-center text-[26px] font-bold">Nueva partida</div>
+
+      <Stepper steps={STEPS} current={step} onStepClick={handleStepClick} />
+
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-5">
+        {step === 0 && (
+          <div className="flex flex-col gap-[15px]">
+            <SelectQuantity
+              quantity={quantityOfPlayers}
+              handleSelect={handleQuantity}
+            />
+            <div className="flex w-full flex-col gap-[12px]">
+              {players.map((player, index) => (
+                <PlayerRow
+                  key={player.playerId}
+                  index={index}
+                  name={player.name}
+                  color={player.color}
+                  takenColors={players
+                    .filter((_, i) => i !== index)
+                    .map((p) => p.color)
+                    .filter(Boolean)}
+                  onName={(name) => handleName(index, name)}
+                  onColor={(color) => handleColor(index, color)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 1 && (
+          <ExpansionSelector
+            expansions={expansions}
+            onToggleExpansion={handleToggleExpansion}
+            onTogglePiece={handleTogglePiece}
+          />
+        )}
+
+        {step === 2 && (
+          <SelectTime time={timeOfPlayers} handleSelect={handleTime} />
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+        {step > 0 && (
+          <button
+            type="button"
+            onClick={handleBack}
+            className="flex h-[52px] items-center justify-center rounded-[12px] border-2 border-secondary px-6 font-bold text-graysoft transition-colors"
+          >
+            Atrás
+          </button>
+        )}
+
+        {step < STEPS.length - 1 ? (
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={!canGoNext}
+            className={`flex h-[52px] flex-1 items-center justify-center rounded-[12px] text-[18px] font-bold transition-all ${
+              canGoNext
+                ? "bg-accent text-primary"
+                : "cursor-not-allowed border-2 border-secondary bg-transparent text-graysoft"
+            }`}
+          >
+            Siguiente
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleStart}
+            disabled={!isReadyToStart}
+            className={`flex h-[52px] flex-1 items-center justify-center rounded-[12px] text-[20px] font-bold tracking-wide transition-all ${
+              isReadyToStart
+                ? "bg-accent text-primary"
+                : "cursor-not-allowed border-2 border-secondary bg-transparent text-graysoft"
+            }`}
+          >
+            EMPEZAR
+          </button>
+        )}
+      </div>
     </div>
   );
 };

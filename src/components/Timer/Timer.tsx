@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import TurnButton from "../TurnButton/TurnButton";
 import CircularProgress from "../ProgressBar/CicularProgressBar";
-import "./Timer.css";
 
 const parseTime = (timeString: string) => {
   const [minutes, seconds] = timeString.split(":").map(Number);
@@ -21,55 +20,43 @@ const Timer = ({
   handleChangePlayerTurn,
   isPaused,
 }: any) => {
-  const timer: any = useRef(null);
-
   const progress =
     (parseTime(currentPlayer.time) * 100) / parseTime(initialTime);
 
-  const handleStart = () => {
-    timer.current = setInterval(() => {
+  useEffect(() => {
+    if (isPaused || !currentPlayer.isPlayerTurn) return;
+
+    const id = setInterval(() => {
       setPlayersInfo((prev: any) =>
         prev?.map((player: any) => {
+          if (!player.isPlayerTurn) return player;
           const parsedTime = parseTime(player.time);
-
-          if (player.isPlayerTurn) {
-            return {
-              ...player,
-              time: formatTime(parsedTime > 0 ? parsedTime - 1 : 0),
-            };
-          } else {
-            return player;
-          }
+          return {
+            ...player,
+            time: formatTime(parsedTime > 0 ? parsedTime - 1 : 0),
+          };
         })
       );
     }, 1000);
-  };
 
-  useEffect(() => {
-    if (!isPaused) {
-      if (currentPlayer.isPlayerTurn) {
-        clearInterval(timer.current);
-        handleStart();
-      }
-    } else {
-      clearInterval(timer.current);
-    }
-
-    return () => clearInterval(timer.current);
-  }, [currentPlayer.player, isPaused]);
+    return () => clearInterval(id);
+  }, [isPaused, currentPlayer.isPlayerTurn, setPlayersInfo]);
 
   return (
-    <div className="timer-container">
-      <div className="timer-player">
+    <div className="flex flex-col items-center justify-center gap-5">
+      <div className="max-w-[280px] truncate text-[22px] font-bold">
+        {currentPlayer.name}
+      </div>
+      <div className="flex justify-center">
         <CircularProgress strokeWidth={12} progress={progress}>
           <TurnButton
-            currentPlayer={currentPlayer}
+            color={currentPlayer.color}
             onClick={handleChangePlayerTurn}
           />
         </CircularProgress>
       </div>
 
-      <div className="timer-time">{currentPlayer.time}</div>
+      <div className="text-[70px]">{currentPlayer.time}</div>
     </div>
   );
 };

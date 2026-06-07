@@ -1,11 +1,11 @@
-import styles from "./SelectCardTitle.module.css";
-
 type SelectCardTitleType = {
   children: string;
 };
 
 const SelectCardTitle = ({ children }: SelectCardTitleType) => {
-  return <div className={styles.title}>{children}</div>;
+  return (
+    <div className="mb-4 text-base font-medium text-graysoft">{children}</div>
+  );
 };
 
 export default SelectCardTitle;

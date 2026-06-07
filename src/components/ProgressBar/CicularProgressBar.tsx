@@ -25,14 +25,10 @@ const CircularProgress = ({
 
   return (
     <div
+      className="relative flex items-center justify-center bg-transparent"
       style={{
         width: size,
         height: size,
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "transparent",
         borderRadius: size,
       }}
     >
@@ -62,16 +58,7 @@ const CircularProgress = ({
         />
       </svg>
 
-      <div
-        style={{
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          height: "100%",
-        }}
-      >
+      <div className="absolute flex h-full w-full items-center justify-center">
         {children || `${progress}%`}
       </div>
     </div>

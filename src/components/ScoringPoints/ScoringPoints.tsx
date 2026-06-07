@@ -1,12 +1,7 @@
-import "./ScoringPoints.css";
-
 const ScoringPoints = ({ points, setScoringPoints }: any) => {
-
-  console.log("scoring Points Component");
-
   return (
     <input
-      className="input"
+      className="h-[50px] rounded-[50px] border-2 border-lightgray pl-5 text-base font-bold text-black outline-none transition-all duration-100 focus:border-graysoft"
       type="number"
       placeholder="0"
       value={points}

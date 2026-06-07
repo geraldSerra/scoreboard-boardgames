@@ -1,62 +1,38 @@
 import * as React from "react";
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
 import X from "../../assets/Icons/X";
-
-// type Anchor = "top" | "left" | "bottom" | "right";
 
 const AnchorDrawer: React.FC<{
   open: boolean;
   handleClose: () => void;
+  hideClose?: boolean;
   children: any;
-}> = ({ open, handleClose, children }: any) => {
+}> = ({ open, handleClose, hideClose, children }: any) => {
   return (
-    <div style={{ height: "100vh" }}>
-      <Drawer
-        anchor={"bottom"}
-        open={open}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        onClose={() => handleClose()}
-        sx={{
-          maxWidth: "100vw",
-          height: "100vh",
-          overflowX: "hidden",
-          backgroundColor: "transparent",
-        }}
+    <>
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => !hideClose && handleClose()}
+      />
+      {/* Bottom sheet */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-50 flex h-screen max-w-full flex-col items-center gap-[10px] overflow-hidden pt-[10px] transition-transform duration-300 ${
+          open ? "translate-y-0" : "translate-y-full"
+        }`}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            pt: "10px",
-            gap: "10px",
-            borderRadius: "20px 20px 20px 0 !important",
-            overflow: "hidden",
-            height: "100vh",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignContent: "center",
-              width: "35px",
-              height: "40px",
-              backgroundColor: "white",
-              borderRadius: "40px",
-            }}
+        {!hideClose && (
+          <div
+            className="flex h-10 w-[35px] justify-center rounded-[40px] bg-white"
             onClick={() => handleClose()}
           >
             <X width="20px" height="20px" color="black" />
-          </Box>
-          {children}
-        </Box>
-      </Drawer>
-    </div>
+          </div>
+        )}
+        {children}
+      </div>
+    </>
   );
 };
 

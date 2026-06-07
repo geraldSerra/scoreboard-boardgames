@@ -1,16 +1,12 @@
-import Stack from "@mui/material/Stack";
-import Slider from "@mui/material/Slider";
-import { memo, useState } from "react";
-import Plus from "@mui/icons-material/AddCircleRounded";
-import Minus from "@mui/icons-material/RemoveCircleRounded";
+import { memo } from "react";
+import Plus from "../../assets/Icons/Plus";
+import Minus from "../../assets/Icons/Minus";
 import getCssVariable from "../../utils/getCssVariable";
-import styles from "./SelectTime.module.css";
 import SelectCardTitle from "../SelectCardsTitle/SelectCardsTitle";
 
 const MIN = 10;
 const MAX = 30;
 
-const accentColor = getCssVariable("--accent-color");
 const secondaryColor = getCssVariable("--secondary-color");
 
 type SelectTimeProps = {
@@ -19,10 +15,8 @@ type SelectTimeProps = {
 };
 
 const SelectTime: React.FC<SelectTimeProps> = memo(({ time, handleSelect }) => {
-  console.log("<SelectTime /> rendered");
-
-  const handleChange = (event: Event, value: number) => {
-    handleSelect(value);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleSelect(Number(event.target.value));
   };
 
   const handleIncrease = () => {
@@ -36,36 +30,34 @@ const SelectTime: React.FC<SelectTimeProps> = memo(({ time, handleSelect }) => {
   };
 
   return (
-    <div className={styles.container}>
-      <SelectCardTitle>Timers</SelectCardTitle>
-      <Stack flexDirection={"row"} alignItems={"baseline"} gap={0.5}>
-        <span style={{ fontSize: "40px", fontWeight: "500" }}>{time}</span>
+    <div className="box-border flex w-full flex-col justify-center rounded-[20px] bg-black/30 p-[15px]">
+      <SelectCardTitle>Tiempo por jugador</SelectCardTitle>
+      <div className="flex flex-row items-baseline gap-0.5">
+        <span className="text-[40px] font-medium">{time}</span>
         <span>{` min`}</span>
-      </Stack>
-      <Stack
-        spacing={2}
-        direction="row"
-        sx={{ width: 200, alignItems: "center", mb: 1 }}
-      >
+      </div>
+      <div className="mb-2 flex w-[200px] items-center gap-2">
         <Minus
           onClick={handleDecrease}
-          fontSize="large"
-          sx={{ color: secondaryColor }}
+          color={secondaryColor}
+          width="32px"
+          height="32px"
         />
-        <Slider
-          sx={{ color: accentColor }}
+        <input
+          type="range"
+          className="h-1 w-full cursor-pointer appearance-none rounded bg-secondary accent-accent"
           min={MIN}
           max={MAX}
           value={time}
           onChange={handleChange}
-          track={false}
         />
         <Plus
           onClick={handleIncrease}
-          fontSize="large"
-          sx={{ color: secondaryColor }}
+          color={secondaryColor}
+          width="32px"
+          height="32px"
         />
-      </Stack>
+      </div>
     </div>
   );
 });

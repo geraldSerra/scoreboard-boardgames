@@ -1,8 +1,12 @@
-import { JSX, RefObject, useRef } from "react";
+import { JSX, memo } from "react";
 import Pause from "../../assets/Icons/Pause";
 import Play from "../../assets/Icons/Play";
 import Score from "../../assets/Icons/Score";
 import getCssVariable from "../../utils/getCssVariable";
+
+// Read the CSS variable once at module load instead of on every render
+// (getComputedStyle forces a style recalc).
+const ACCENT_COLOR = getCssVariable("--accent-color") || "#00c9aa";
 
 const ActionButton: React.FC<{
   variant: "pause" | "score";
@@ -10,13 +14,12 @@ const ActionButton: React.FC<{
   width: string;
   height?: string;
   onClick: () => void;
-}> = ({ variant, action, width, height, onClick }) => {
+}> = memo(({ variant, action, width, height, onClick }) => {
   let icon: JSX.Element | null = null;
   let label: string = "";
-  const color: RefObject<string> = useRef(getCssVariable("--accent-color"));
 
   const iconsProps = {
-    color: color.current ?? "black",
+    color: ACCENT_COLOR,
     width: width,
     height: height ?? width,
   };
@@ -33,11 +36,14 @@ const ActionButton: React.FC<{
   }
 
   return (
-    <div>
-      <div onClick={onClick}>{icon}</div>
-      <div>{label}</div>
+    <div
+      className="flex cursor-pointer flex-col items-center gap-1"
+      onClick={onClick}
+    >
+      <div>{icon}</div>
+      <div className="text-xs">{label}</div>
     </div>
   );
-};
+});
 
 export default ActionButton;

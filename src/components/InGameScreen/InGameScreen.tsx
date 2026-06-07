@@ -3,7 +3,7 @@ import Player from "../../types/playerType";
 import Chip from "../Chips/Chip";
 import Timer from "../Timer/Timer";
 import ActionButton from "../ActionButton/ActionButton";
-import styles from "./InGameScreen.module.css";
+import GameConfig from "../../types/gameConfigType";
 
 type totalPointsType = {
   playerId: number;
@@ -17,6 +17,9 @@ type InGameScreenProps = {
   isPaused: boolean;
   handleTogglePause: () => void;
   handleOpenScore: () => void;
+  onFinish: () => void;
+  /** Selected expansions/pieces — reserved for upcoming in-game features. */
+  gameConfig?: GameConfig | null;
 };
 
 const InGameScreen = ({
@@ -26,6 +29,7 @@ const InGameScreen = ({
   handleOpenScore,
   isPaused,
   handleTogglePause,
+  onFinish,
 }: InGameScreenProps) => {
   const [playersInfo, setPlayersInfo] = useState<Player[]>(players);
 
@@ -62,18 +66,19 @@ const InGameScreen = ({
   }, [isPaused, playerTurn.playerId, playersInfo.length]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.chips}>
+    <div className="mx-[15px] flex h-full w-full flex-col items-center justify-between">
+      <div className="mt-20 flex w-full justify-center gap-[10px]">
         {playersInfo.map((player: Player) => (
           <Chip
             key={player.playerId}
             color={player.color}
+            name={player.name}
             time={player.time}
             score={handleParticularScore(player.playerId)}
           />
         ))}
       </div>
-      <div className={styles.timer}>
+      <div>
         <Timer
           key={playerTurn.playerId}
           currentPlayer={playerTurn}
@@ -83,14 +88,23 @@ const InGameScreen = ({
           isPaused={isPaused}
         />
       </div>
-      <div className={styles.actions}>
-        <ActionButton
-          variant="pause"
-          action={isPaused}
-          onClick={handleTogglePause}
-          width="30px"
-        />
-        <ActionButton variant="score" onClick={handleOpenScore} width="30px" />
+      <div className="mb-10 flex flex-col items-center gap-4">
+        <div className="flex gap-[100px]">
+          <ActionButton
+            variant="pause"
+            action={isPaused}
+            onClick={handleTogglePause}
+            width="30px"
+          />
+          <ActionButton variant="score" onClick={handleOpenScore} width="30px" />
+        </div>
+        <button
+          type="button"
+          onClick={onFinish}
+          className="rounded-full border border-secondary px-4 py-1.5 text-xs font-semibold text-accent"
+        >
+          Terminar juego
+        </button>
       </div>
     </div>
   );

@@ -57,18 +57,13 @@ const FinalScreen = ({
     }
   );
 
+  if (!result.length) return null;
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "fit-content",
-        width: "100%",
-        gap: "15px",
-      }}
-    >
+    <div className="flex h-fit w-full flex-col gap-[15px]">
+      <div className="text-[18px] font-bold">Estadísticas</div>
       {result.map((item: ResultEntry) => (
-        <Stats scorable={item.option} data={item.data} />
+        <Stats key={item.option} scorable={item.option} data={item.data} />
       ))}
     </div>
   );

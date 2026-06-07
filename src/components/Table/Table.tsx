@@ -6,7 +6,6 @@ import Garden from "../../assets/Icons/Garden";
 import Field from "../../assets/Icons/Field";
 import ScoringOptionType from "../../types/scoringOptionType";
 import ScoringPlayerType from "../../types/scoringPlayerType";
-import "./Table.css";
 import FinalScreen from "../FinalScreen/FinalScreen";
 import getColor from "../../utils/getColor";
 
@@ -39,8 +38,6 @@ const Table: React.FC<{
   score: ScoreType[];
   options: ScoringOptionType[];
 }> = ({ mode, scoringPlayers, score, options }) => {
-  console.log("Table Component rendered");
-
   totalArray = scoringPlayers.map((player: ScoringPlayerType) => {
     return { playerId: player.playerId, points: 0 };
   });
@@ -59,11 +56,11 @@ const Table: React.FC<{
 
   const GameTable = () => {
     return (
-      <table className="scoring-table">
+      <table className="h-fit min-h-[180px] w-full overflow-hidden rounded-[10px] border-collapse bg-lightgray text-center">
         <thead>
-          <tr className="scoring-tr">
+          <tr className="h-[60px] bg-graysoft">
             {scoringPlayers.map((player: ScoringPlayerType) => (
-              <th className="scoring-th">
+              <th className="h-[50px] text-base">
                 <Meeple
                   color={getColor(player.color)}
                   width={"24px"}
@@ -80,7 +77,7 @@ const Table: React.FC<{
         </thead>
         <tbody>
           {score.map((item: any) => (
-            <tr style={{ height: "30px" }}>
+            <tr className="h-[30px]">
               {scoringPlayers.map((player: ScoringPlayerType) => {
                 if (item.playersId.includes(player.playerId)) {
                   return <td>{item.points}</td>;
@@ -131,24 +128,37 @@ const Table: React.FC<{
 
     return (
       <div>
-        <table className="scoring-table">
+        <table className="h-fit min-h-[180px] w-full overflow-hidden rounded-[10px] border-collapse bg-lightgray text-center">
           <thead>
-            <tr className="final-tr">
-              <th className="final-th">Result</th>
+            <tr className="flex h-[60px] items-center justify-between">
+              <th className="flex h-[60px] w-1/2 flex-col items-center justify-center bg-graysoft text-[11px] font-medium capitalize">
+                Result
+              </th>
               {options.map((option: ScoringOptionType) => (
-                <th className="final-th" key={option.scorable}>
+                <th
+                  className="flex h-[60px] w-1/2 flex-col items-center justify-center bg-graysoft text-[11px] font-medium capitalize"
+                  key={option.scorable}
+                >
                   {optionIcons[option.scorable]}
-                  <div className="final-th-label">{option.scorable}</div>
+                  <div>{option.scorable}</div>
                 </th>
               ))}
-              <th className="final-th">Total</th>
+              <th className="flex h-[60px] w-1/2 flex-col items-center justify-center bg-graysoft text-[11px] font-medium capitalize">
+                Total
+              </th>
             </tr>
           </thead>
           <tbody>
             {finalScore.map((item: any, index: number) => {
               return (
-                <tr className={`final-tr ${index === 0 ? "winner" : ""}`}>
-                  <td className="final-td">
+                <tr
+                  className={`flex h-[60px] items-center justify-between ${
+                    index === 0
+                      ? "h-[60px] border-[3px] border-[#f7c566] bg-[#ffe4c4] text-[18px]"
+                      : ""
+                  }`}
+                >
+                  <td className="flex flex-1 items-center justify-center">
                     <Meeple
                       color={getColor(item.color)}
                       width="24px"
@@ -158,13 +168,20 @@ const Table: React.FC<{
                   {options.map((option: ScoringOptionType) => {
                     if (Object.keys(item.points).includes(option.scorable)) {
                       return (
-                        <td className="final-td">
+                        <td className="flex flex-1 items-center justify-center">
                           {item.points[option.scorable]}
                         </td>
                       );
-                    } else return <td className="final-td">0</td>;
+                    } else
+                      return (
+                        <td className="flex flex-1 items-center justify-center">
+                          0
+                        </td>
+                      );
                   })}
-                  <td className="final-td">{item.total}</td>
+                  <td className="flex flex-1 items-center justify-center">
+                    {item.total}
+                  </td>
                 </tr>
               );
             })}
@@ -175,13 +192,16 @@ const Table: React.FC<{
   };
 
   return (
-    <div className="table-container">
-      {/* {mode === "gameInProgress" ? <GameTable /> : <FinalScore />} */}
-      <GameTable />
-      <br />
-      <FinalScore />
-      <br />
-      <FinalScreen score={score} scoringPlayers={scoringPlayers} />
+    <div className="mx-[15px] text-sm font-bold">
+      {mode === "gameInProgress" ? (
+        <GameTable />
+      ) : (
+        <>
+          <FinalScore />
+          <br />
+          <FinalScreen score={score} scoringPlayers={scoringPlayers} />
+        </>
+      )}
     </div>
   );
 };
