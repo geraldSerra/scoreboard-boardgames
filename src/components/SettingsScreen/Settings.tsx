@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import SelectTime from "../SelectTime/SelectTime";
 import SelectQuantity from "../SelectQuantity/SelectQuantity";
-import PlayerRow from "../PlayerRow/PlayerRow";
+import PlayerRow, { COLORS_OPTIONS } from "../PlayerRow/PlayerRow";
 import ExpansionSelector from "../Expansions/ExpansionSelector";
 import Stepper from "../Stepper/Stepper";
+import Switch from "../Switch/Switch";
 import Expansion from "../../types/expansionType";
 import { cloneExpansions } from "../../data/expansions";
 
@@ -31,6 +32,12 @@ const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
   );
   const [timeOfPlayers, setTimeOfPlayers] = useState<number>(
     initialConfig?.time ?? 15
+  );
+  const [timerEnabled, setTimerEnabled] = useState<boolean>(
+    initialConfig?.timerEnabled ?? false
+  );
+  const [advancedScoring, setAdvancedScoring] = useState<boolean>(
+    initialConfig?.advancedScoring ?? false
   );
   const [expansions, setExpansions] = useState<Expansion[]>(() =>
     initialConfig?.expansions
@@ -63,6 +70,13 @@ const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
       prev.map((player, i) => (i === index ? { ...player, name } : player))
     );
   }, []);
+
+  const handleRandomColors = () => {
+    const shuffled = [...COLORS_OPTIONS].sort(() => Math.random() - 0.5);
+    setPlayers((prev) =>
+      prev.map((player, i) => ({ ...player, color: shuffled[i] }))
+    );
+  };
 
   const handleColor = useCallback((index: number, color: string) => {
     setPlayers((prev) =>
@@ -115,11 +129,11 @@ const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
       playerId: index + 1,
       name: player.name.trim() || `Jugador ${index + 1}`,
       color: player.color,
-      time: `${timeOfPlayers}:00`,
+      time: timerEnabled ? `${timeOfPlayers}:00` : "",
       isPlayerTurn: index === 0,
     }));
 
-    handleSettings(settings, { expansions });
+    handleSettings(settings, { expansions, advancedScoring });
   };
 
   return (
@@ -151,19 +165,46 @@ const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
                 />
               ))}
             </div>
+            <button
+              type="button"
+              onClick={handleRandomColors}
+              className="self-center rounded-full border-2 border-secondary px-4 py-2 text-sm font-semibold text-accent"
+            >
+              🎲 Colores al azar
+            </button>
           </div>
         )}
 
         {step === 1 && (
-          <ExpansionSelector
-            expansions={expansions}
-            onToggleExpansion={handleToggleExpansion}
-            onTogglePiece={handleTogglePiece}
-          />
+          <div className="flex flex-col gap-[15px]">
+            <div className="box-border flex w-full items-center justify-between gap-3 rounded-[20px] bg-black/30 p-[15px]">
+              <div className="min-w-0">
+                <div className="font-bold">Puntuación avanzada</div>
+                <div className="text-xs text-graysoft">
+                  Calcula los puntos por losetas, escudos y construcciones
+                  completas en vez de escribirlos a mano.
+                </div>
+              </div>
+              <Switch
+                on={advancedScoring}
+                onToggle={() => setAdvancedScoring((v) => !v)}
+              />
+            </div>
+            <ExpansionSelector
+              expansions={expansions}
+              onToggleExpansion={handleToggleExpansion}
+              onTogglePiece={handleTogglePiece}
+            />
+          </div>
         )}
 
         {step === 2 && (
-          <SelectTime time={timeOfPlayers} handleSelect={handleTime} />
+          <SelectTime
+            time={timeOfPlayers}
+            handleSelect={handleTime}
+            enabled={timerEnabled}
+            onToggleEnabled={() => setTimerEnabled((v) => !v)}
+          />
         )}
       </div>
 

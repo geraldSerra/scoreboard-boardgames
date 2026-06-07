@@ -1,17 +1,37 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import Player from "../../types/playerType";
 import Chip from "../Chips/Chip";
 import Timer from "../Timer/Timer";
 import ActionButton from "../ActionButton/ActionButton";
 import GameConfig from "../../types/gameConfigType";
+import useWakeLock from "../../hooks/useWakeLock";
+import vibrate from "../../utils/haptics";
+import { sound } from "../../utils/sound";
+import getColor from "../../utils/getColor";
 
 type totalPointsType = {
   playerId: number;
   points: number;
 };
 
+const NAVY: [number, number, number] = [11, 25, 44];
+
+const hexToRgb = (hex: string): [number, number, number] => {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+};
+
+/** Darkened tint of the player colour (mixed toward navy) for a readable background. */
+const tintWithNavy = (hex: string, colorWeight: number) => {
+  const [r, g, b] = hexToRgb(hex);
+  const m = (c: number, i: number) =>
+    Math.round(c * colorWeight + NAVY[i] * (1 - colorWeight));
+  return `rgb(${m(r, 0)}, ${m(g, 1)}, ${m(b, 2)})`;
+};
+
 type InGameScreenProps = {
-  players: Player[];
+  playersInfo: Player[];
+  setPlayersInfo: (updater: Player[] | ((prev: Player[]) => Player[])) => void;
   totalPoints: totalPointsType[];
   initialTime: string;
   isPaused: boolean;
@@ -23,7 +43,8 @@ type InGameScreenProps = {
 };
 
 const InGameScreen = ({
-  players,
+  playersInfo,
+  setPlayersInfo,
   totalPoints,
   initialTime,
   handleOpenScore,
@@ -31,7 +52,7 @@ const InGameScreen = ({
   handleTogglePause,
   onFinish,
 }: InGameScreenProps) => {
-  const [playersInfo, setPlayersInfo] = useState<Player[]>(players);
+  useWakeLock(true);
 
   const playerTurn = playersInfo.filter(
     (player: Player) => player.isPlayerTurn
@@ -47,6 +68,8 @@ const InGameScreen = ({
 
   const handleChangeTurn = useCallback(() => {
     if (isPaused) return;
+    vibrate(30);
+    sound.turn();
     const length = playersInfo.length;
     const turn = playerTurn.playerId;
 
@@ -65,16 +88,41 @@ const InGameScreen = ({
     );
   }, [isPaused, playerTurn.playerId, playersInfo.length]);
 
+  const turnColor =
+    playerTurn?.color === "black"
+      ? "#7a8aa0"
+      : getColor(playerTurn?.color) || "#1f4068";
+  const turnBase = tintWithNavy(turnColor, 0.35);
+
+  const maxScore = Math.max(
+    0,
+    ...playersInfo.map((p: Player) => handleParticularScore(p.playerId))
+  );
+
   return (
-    <div className="mx-[15px] flex h-full w-full flex-col items-center justify-between">
-      <div className="mt-20 flex w-full justify-center gap-[10px]">
+    <>
+      <div
+        className="turn-bg fixed inset-0 z-0"
+        style={{
+          backgroundColor: turnBase,
+          backgroundImage: `radial-gradient(circle at 25% 15%, ${turnColor}73, transparent 58%), radial-gradient(circle at 80% 88%, ${turnColor}40, transparent 58%)`,
+        }}
+      />
+      <div className="relative z-10 mx-[15px] flex h-full w-full flex-col items-center justify-between">
+        <div className="mt-12 flex w-full flex-col gap-2">
         {playersInfo.map((player: Player) => (
           <Chip
             key={player.playerId}
             color={player.color}
             name={player.name}
             time={player.time}
+            initialTime={initialTime}
             score={handleParticularScore(player.playerId)}
+            isCurrent={player.isPlayerTurn}
+            isLeader={
+              handleParticularScore(player.playerId) === maxScore &&
+              maxScore > 0
+            }
           />
         ))}
       </div>
@@ -105,8 +153,9 @@ const InGameScreen = ({
         >
           Terminar juego
         </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

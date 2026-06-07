@@ -27,11 +27,11 @@ const ActionButton: React.FC<{
   switch (variant) {
     case "pause":
       icon = action ? <Play {...iconsProps} /> : <Pause {...iconsProps} />;
-      label = action ? "Continue" : "Pause";
+      label = action ? "Continuar" : "Pausar";
       break;
     case "score":
       icon = <Score {...iconsProps} />;
-      label = "Score";
+      label = "Puntuar";
       break;
   }
 

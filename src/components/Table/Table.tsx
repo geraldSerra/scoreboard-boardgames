@@ -8,6 +8,8 @@ import ScoringOptionType from "../../types/scoringOptionType";
 import ScoringPlayerType from "../../types/scoringPlayerType";
 import FinalScreen from "../FinalScreen/FinalScreen";
 import getColor from "../../utils/getColor";
+import scorableLabel from "../../utils/scorableLabel";
+import X from "../../assets/Icons/X";
 
 const optionIcons: any = {
   road: <Road color="black" width="24px" height="24px" />,
@@ -37,7 +39,8 @@ const Table: React.FC<{
   scoringPlayers: ScoringPlayerType[];
   score: ScoreType[];
   options: ScoringOptionType[];
-}> = ({ mode, scoringPlayers, score, options }) => {
+  onDeleteScore?: (index: number) => void;
+}> = ({ mode, scoringPlayers, score, options, onDeleteScore }) => {
   totalArray = scoringPlayers.map((player: ScoringPlayerType) => {
     return { playerId: player.playerId, points: 0 };
   });
@@ -56,37 +59,77 @@ const Table: React.FC<{
 
   const GameTable = () => {
     return (
-      <table className="h-fit min-h-[180px] w-full overflow-hidden rounded-[10px] border-collapse bg-lightgray text-center">
+      <table className="w-full overflow-hidden rounded-[10px] border-collapse bg-graysoft text-center">
         <thead>
-          <tr className="h-[60px] bg-graysoft">
+          <tr className="h-[60px]">
             {scoringPlayers.map((player: ScoringPlayerType) => (
-              <th className="h-[50px] text-base">
-                <Meeple
-                  color={getColor(player.color)}
-                  width={"24px"}
-                  height={"24px"}
-                />
-                {
-                  totalArray.filter(
-                    (total: any) => total.playerId === player.playerId
-                  )[0].points
-                }
+              <th key={player.playerId} className="h-[60px] text-base">
+                <div className="flex flex-col items-center">
+                  <Meeple
+                    color={getColor(player.color)}
+                    width={"24px"}
+                    height={"24px"}
+                  />
+                  {
+                    totalArray.filter(
+                      (total: any) => total.playerId === player.playerId
+                    )[0].points
+                  }
+                </div>
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
-          {score.map((item: any) => (
-            <tr className="h-[30px]">
-              {scoringPlayers.map((player: ScoringPlayerType) => {
-                if (item.playersId.includes(player.playerId)) {
-                  return <td>{item.points}</td>;
-                } else return <td></td>;
-              })}
-            </tr>
-          ))}
-        </tbody>
       </table>
+    );
+  };
+
+  const ScoreHistory = () => {
+    if (!score.length) {
+      return (
+        <div className="mt-3 text-center text-xs font-medium text-graysoft">
+          Aún no hay puntos cargados.
+        </div>
+      );
+    }
+
+    return (
+      <div className="mt-3 flex flex-col gap-2">
+        {score.map((item: ScoreType, index: number) => (
+          <div
+            key={index}
+            className="flex items-center gap-2 rounded-[10px] bg-lightgray px-3 py-2"
+          >
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+              {optionIcons[item.option]}
+            </div>
+            <span className="text-xs font-semibold">
+              {scorableLabel(item.option)}
+            </span>
+            <div className="flex items-center gap-1">
+              {scoringPlayers
+                .filter((p) => item.playersId.includes(p.playerId))
+                .map((p) => (
+                  <Meeple
+                    key={p.playerId}
+                    color={getColor(p.color)}
+                    width={"16px"}
+                    height={"16px"}
+                  />
+                ))}
+            </div>
+            <span className="ml-auto text-base font-bold">+{item.points}</span>
+            <button
+              type="button"
+              aria-label="Borrar jugada"
+              onClick={() => onDeleteScore?.(index)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200"
+            >
+              <X width="14px" height="14px" color="#777" />
+            </button>
+          </div>
+        ))}
+      </div>
     );
   };
 
@@ -132,7 +175,7 @@ const Table: React.FC<{
           <thead>
             <tr className="flex h-[60px] items-center justify-between">
               <th className="flex h-[60px] w-1/2 flex-col items-center justify-center bg-graysoft text-[11px] font-medium capitalize">
-                Result
+                Resultado
               </th>
               {options.map((option: ScoringOptionType) => (
                 <th
@@ -140,7 +183,7 @@ const Table: React.FC<{
                   key={option.scorable}
                 >
                   {optionIcons[option.scorable]}
-                  <div>{option.scorable}</div>
+                  <div>{scorableLabel(option.scorable)}</div>
                 </th>
               ))}
               <th className="flex h-[60px] w-1/2 flex-col items-center justify-center bg-graysoft text-[11px] font-medium capitalize">
@@ -194,7 +237,10 @@ const Table: React.FC<{
   return (
     <div className="mx-[15px] text-sm font-bold">
       {mode === "gameInProgress" ? (
-        <GameTable />
+        <>
+          <GameTable />
+          <ScoreHistory />
+        </>
       ) : (
         <>
           <FinalScore />

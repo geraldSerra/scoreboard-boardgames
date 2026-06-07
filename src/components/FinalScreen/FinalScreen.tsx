@@ -1,6 +1,7 @@
 import ScoreType from "../../types/scoreType";
 import ScoringPlayerType from "../../types/scoringPlayerType";
 import Stats from "../Stats/Stats";
+import scorableLabel from "../../utils/scorableLabel";
 
 const FinalScreen = ({
   score,
@@ -63,7 +64,11 @@ const FinalScreen = ({
     <div className="flex h-fit w-full flex-col gap-[15px]">
       <div className="text-[18px] font-bold">Estadísticas</div>
       {result.map((item: ResultEntry) => (
-        <Stats key={item.option} scorable={item.option} data={item.data} />
+        <Stats
+          key={item.option}
+          scorable={scorableLabel(item.option)}
+          data={item.data}
+        />
       ))}
     </div>
   );

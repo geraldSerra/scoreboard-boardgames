@@ -32,3 +32,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* Animated background that takes the current player's colour during a turn. */
+@keyframes turnDrift {
+  0% {
+    background-position: 0% 0%, 100% 100%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 50%;
+  }
+  100% {
+    background-position: 0% 0%, 100% 100%;
+  }
+}
+
+.turn-bg {
+  background-size: 200% 200%, 200% 200%;
+  animation: turnDrift 8s ease-in-out infinite;
+}

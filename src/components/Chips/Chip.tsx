@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Crown } from "lucide-react";
 import Meeple from "../../assets/Icons/Meeple";
 import getColor from "../../utils/getColor";
 
@@ -7,28 +8,89 @@ type ChipProps = {
   name: string;
   time: string;
   score: number;
+  initialTime?: string;
+  isCurrent?: boolean;
+  isLeader?: boolean;
 };
 
-const Chip = memo(({ color, name, time, score = 0 }: ChipProps) => {
-  return (
-    <div className="flex h-full w-full max-w-[110px] flex-col justify-between gap-1 overflow-hidden rounded-[10px] border-2 border-secondary text-white">
-      <div className="box-border flex flex-col items-center justify-center gap-3 rounded-t-[18px] bg-primary pt-[15px]">
-        <div className="absolute mb-[70px] flex h-[25px] w-[25px] scale-[2.4] items-center justify-center rounded-[20px]">
-          <Meeple color={getColor(color)} width={"20px"} height={"20px"} />
-        </div>
-        <div className="text-[22px] font-bold">{score}</div>
-      </div>
+const secondsOf = (t: string) => {
+  const [m, s] = t.split(":").map(Number);
+  return (m || 0) * 60 + (s || 0);
+};
 
-      <div className="flex flex-col items-center bg-secondary">
-        <div className="w-full truncate px-1 text-center text-xs font-semibold">
-          {name}
+const Chip = memo(
+  ({
+    color,
+    name,
+    time,
+    score = 0,
+    initialTime,
+    isCurrent = false,
+    isLeader = false,
+  }: ChipProps) => {
+    const hasTimer = !!time;
+    const left = hasTimer ? secondsOf(time) : 0;
+    const total = initialTime ? secondsOf(initialTime) : 0;
+    const progress =
+      total > 0 ? Math.max(0, Math.min(100, (left / total) * 100)) : 0;
+    const low = hasTimer && left <= 30;
+    // Same thresholds/colours as the main circular timer.
+    const barColor =
+      progress <= 20 ? "#E72929" : progress <= 50 ? "#FFD63A" : "#4CAF50";
+
+    return (
+      <div
+        className={`w-full overflow-hidden rounded-[12px] border-2 bg-primary transition-all ${
+          isLeader ? "border-[#f7c566]" : "border-secondary"
+        } ${
+          isCurrent
+            ? "ring-2 ring-accent shadow-[0_0_14px_rgba(0,201,170,0.45)]"
+            : ""
+        }`}
+      >
+        <div className="flex items-center gap-3 px-3 py-2">
+          <Meeple color={getColor(color)} width={"34px"} height={"34px"} />
+
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-semibold text-white">
+              {name}
+            </div>
+            {hasTimer && (
+              <div
+                className={`text-base font-bold tabular-nums ${
+                  low ? "text-red-400" : "text-graysoft"
+                }`}
+              >
+                {time}
+              </div>
+            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1">
+            {isLeader && (
+              <Crown width="18px" height="18px" color="#e8a73a" fill="#f7c566" />
+            )}
+            <div
+              className={`text-2xl font-bold tabular-nums ${
+                isLeader ? "text-[#f7c566]" : "text-white"
+              }`}
+            >
+              {score}
+            </div>
+          </div>
         </div>
-        <div className="flex h-7 w-full items-center justify-center overflow-hidden text-base tracking-[0.3px]">
-          {time}
-        </div>
+
+        {hasTimer && (
+          <div className="h-1.5 w-full bg-black/30">
+            <div
+              className="h-full transition-[width] duration-1000 ease-linear"
+              style={{ width: `${progress}%`, backgroundColor: barColor }}
+            />
+          </div>
+        )}
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 export default Chip;

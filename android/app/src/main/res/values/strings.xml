@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Carcassonne Scoreboard</string>
+    <string name="title_activity_main">Carcassonne Scoreboard</string>
+    <string name="package_name">com.innmotrix.scoreboard</string>
+    <string name="custom_url_scheme">com.innmotrix.scoreboard</string>
+</resources>

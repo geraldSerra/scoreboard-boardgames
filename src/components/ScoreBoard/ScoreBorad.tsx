@@ -1,7 +1,10 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ScoringPlayer from "../ScoringPlayer/ScoringPlayer";
 import ScoringOptions from "../ScoringOption/ScoringOption";
+import ScoreCalculator from "../ScoreCalculator/ScoreCalculator";
 import ScoringPoints from "../ScoringPoints/ScoringPoints";
+import QuickPresets from "../QuickPresets/QuickPresets";
+import Podium from "../Podium/Podium";
 import Table from "../Table/Table";
 //Types
 import ScoringOptionType from "../../types/scoringOptionType";
@@ -9,6 +12,7 @@ import Player from "../../types/playerType";
 import ScoreType from "../../types/scoreType";
 import ScoringType from "../../types/scoringPlayerType";
 import GameConfig from "../../types/gameConfigType";
+import { sound } from "../../utils/sound";
 
 type Scorable = ScoringOptionType["scorable"];
 
@@ -25,11 +29,13 @@ const isPieceEnabled = (
   );
 
 const buildOptions = (
-  config: GameConfig | null | undefined
+  config: GameConfig | null | undefined,
+  includeField = true
 ): ScoringOptionType[] => {
   const scorables: Scorable[] = [...BASE_SCORABLES];
   if (isPieceEnabled(config, "abbot")) scorables.push("garden"); // Abad puntúa jardines
-  if (isPieceEnabled(config, "farmer")) scorables.push("field"); // Campesino puntúa campos
+  // El campo solo se puntúa al final de la partida.
+  if (includeField && isPieceEnabled(config, "farmer")) scorables.push("field");
   return scorables.map((scorable) => ({ scorable, selected: false }));
 };
 
@@ -44,6 +50,10 @@ type ScoreBoardProps = {
   gameConfig?: GameConfig | null;
   onRematch?: () => void;
   onReconfigure?: () => void;
+  onDeleteScore?: (index: number) => void;
+  onShowResults?: () => void;
+  onCancelEndgame?: () => void;
+  currentPlayerId?: number;
 };
 
 const ScoreBoard = ({
@@ -55,12 +65,23 @@ const ScoreBoard = ({
   gameConfig,
   onRematch,
   onReconfigure,
+  onDeleteScore,
+  onShowResults,
+  onCancelEndgame,
+  currentPlayerId,
 }: ScoreBoardProps) => {
   initialPlayers = players.map((player: Player) => {
-    return { ...player, selected: false };
+    return { ...player, selected: player.playerId === currentPlayerId };
   });
 
-  const options = useMemo(() => buildOptions(gameConfig), [gameConfig]);
+  const isEndgame = mode === "endgame";
+  const tableOptions = useMemo(() => buildOptions(gameConfig, true), [
+    gameConfig,
+  ]);
+  const options = useMemo(
+    () => buildOptions(gameConfig, isEndgame),
+    [gameConfig, isEndgame]
+  );
 
   const [scoringPlayers, setScoringPlayers] =
     useState<ScoringType[]>(initialPlayers);
@@ -96,22 +117,39 @@ const ScoreBoard = ({
     );
   };
 
-  const handleSummit = () => {
-    if (!readyToScore()) return;
+  const selectedScorable =
+    scoringOptions.find((option) => option.selected)?.scorable ?? "";
+
+  const innsCathedralsEnabled = !!gameConfig?.expansions?.some(
+    (expansion) => expansion.id === "inns-cathedrals" && expansion.enabled
+  );
+
+  const advancedScoring = !!gameConfig?.advancedScoring;
+
+  const hasPlayerSelected = scoringPlayers.some((player) => player.selected);
+
+  const handleTotalChange = useCallback(
+    (total: number) => setScoringPoints(total ? String(total) : ""),
+    []
+  );
+
+  const commitScore = (points: number) => {
+    const selectedPlayerIds = scoringPlayers
+      .filter((player: ScoringType) => player.selected)
+      .map((player: ScoringType) => player.playerId);
+
+    if (!selectedPlayerIds.length || !selectedScorable || !points) return;
 
     const newScore = [
       ...score,
       {
-        playersId: scoringPlayers
-          .filter((player: ScoringType) => player.selected)
-          .map((player: ScoringType) => player.playerId),
-        option: scoringOptions.filter(
-          (option: ScoringOptionType) => option.selected
-        )[0].scorable,
-        points: scoringPoints,
+        playersId: selectedPlayerIds,
+        option: selectedScorable,
+        points: String(points),
       },
     ];
 
+    sound.score();
     handleScore(newScore);
     setScoringPoints("");
     setScoringOptions(options);
@@ -119,45 +157,108 @@ const ScoreBoard = ({
     handleTotalScore(newScore, players);
   };
 
+  const handleSummit = () => {
+    if (!readyToScore()) return;
+    commitScore(Number(scoringPoints));
+  };
+
   return (
     <div className="flex h-full w-full max-w-[100vw] flex-col gap-5 overflow-y-auto overflow-x-hidden rounded-t-[20px] bg-white py-5 text-black">
       <div className="mx-[15px] mb-5 mt-10 text-[30px] font-bold">
-        {mode === "gameInProgress" ? "Scoreboard" : "Final Score"}
+        {mode === "gameFinished"
+          ? "Puntuación final"
+          : isEndgame
+          ? "Cierre de partida"
+          : "Marcador"}
       </div>
-      {mode === "gameInProgress" && (
+      {mode !== "gameFinished" && (
         <>
+          {isEndgame && (
+            <div className="mx-[15px] rounded-[12px] bg-lightgray p-3 text-xs font-medium text-black">
+              Cargá las <b>construcciones incompletas</b> (con seguidores aún en
+              el tablero) y los <b>campos</b>. Cuando termines, tocá{" "}
+              <b>Ver resultados</b>.
+            </div>
+          )}
           <ScoringPlayer
             scoringPlayers={scoringPlayers}
             selectPlayer={handlePlayerSelected}
           />
-          <ScoringOptions
-            options={scoringOptions}
-            selectOption={handleOptionSelected}
-          />
-          <div className="mx-[15px] flex flex-row gap-5">
-            <ScoringPoints
-              points={scoringPoints}
-              setScoringPoints={setScoringPoints}
-            />
-            <div
-              className={`flex h-[50px] w-full items-center justify-center rounded-[10px] font-bold ${
-                readyToScore()
-                  ? "bg-black/[0.785] text-white"
-                  : "border-2 border-lightgray bg-transparent text-graysoft"
-              }`}
-              onClick={() => handleSummit()}
-            >
-              Add points
+
+          {hasPlayerSelected ? (
+            <>
+              <ScoringOptions
+                options={scoringOptions}
+                selectOption={handleOptionSelected}
+              />
+              <div className="mx-[15px] flex flex-col gap-3">
+                {advancedScoring ? (
+                  <ScoreCalculator
+                    key={selectedScorable || "none"}
+                    scorable={selectedScorable}
+                    innsCathedrals={innsCathedralsEnabled}
+                    onTotalChange={handleTotalChange}
+                    defaultCompleted={!isEndgame}
+                  />
+                ) : (
+                  <>
+                    <QuickPresets
+                      scorable={selectedScorable}
+                      onPick={(value) => commitScore(value)}
+                    />
+                    <ScoringPoints
+                      points={scoringPoints}
+                      setScoringPoints={setScoringPoints}
+                    />
+                  </>
+                )}
+                <div
+                  className={`flex h-[50px] items-center justify-center whitespace-nowrap rounded-[10px] font-bold ${
+                    readyToScore()
+                      ? "bg-black/[0.785] text-white"
+                      : "border-2 border-lightgray bg-transparent text-graysoft"
+                  }`}
+                  onClick={() => handleSummit()}
+                >
+                  Sumar puntos{scoringPoints ? ` (+${scoringPoints})` : ""}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mx-[15px] rounded-[12px] bg-lightgray p-4 text-center text-sm font-medium text-graysoft">
+              Elegí un jugador para puntuar.
             </div>
-          </div>
+          )}
         </>
       )}
+      {mode === "gameFinished" && <Podium players={players} score={score} />}
+
       <Table
-        mode={mode}
+        mode={mode === "gameFinished" ? "gameFinished" : "gameInProgress"}
         scoringPlayers={scoringPlayers}
         score={score}
-        options={options}
+        options={tableOptions}
+        onDeleteScore={onDeleteScore}
       />
+
+      {isEndgame && (
+        <div className="mx-[15px] mb-2 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={onShowResults}
+            className="flex h-[52px] items-center justify-center rounded-[12px] bg-accent text-[18px] font-bold text-primary"
+          >
+            Ver resultados
+          </button>
+          <button
+            type="button"
+            onClick={onCancelEndgame}
+            className="flex h-[52px] items-center justify-center rounded-[12px] border-2 border-secondary text-[16px] font-bold text-secondary"
+          >
+            Volver al juego
+          </button>
+        </div>
+      )}
 
       {mode === "gameFinished" && (
         <div className="mx-[15px] mb-2 mt-2 flex flex-col gap-3">
