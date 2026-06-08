@@ -19,7 +19,7 @@ const ScoringOptions: React.FC<{
   selectOption: (option: string) => void;
 }> = memo(({ options, selectOption }) => {
   return (
-    <div className="mx-[15px] flex flex-wrap justify-center gap-2">
+    <div className="mx-[15px] flex justify-center gap-2">
       {options.map((option: ScoringOptionType) => {
         const img = TILE[option.scorable];
         return (
@@ -27,7 +27,7 @@ const ScoringOptions: React.FC<{
             key={option.scorable}
             type="button"
             onClick={() => selectOption(option.scorable)}
-            className={`flex w-[112px] flex-col items-center gap-1 rounded-[16px] border-2 p-2 transition-all ${
+            className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-[16px] border-2 p-1.5 transition-all ${
               option.selected
                 ? "border-accent bg-accent/10"
                 : "border-graysoft bg-transparent"
@@ -37,14 +37,14 @@ const ScoringOptions: React.FC<{
               <img
                 src={img}
                 alt=""
-                className="h-24 w-24 rounded-[12px] object-contain"
+                className="aspect-square w-full rounded-[12px] object-contain"
               />
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-[12px] bg-[#5a8f3a]">
+              <div className="flex aspect-square w-full items-center justify-center rounded-[12px] bg-[#5a8f3a]">
                 <Field color="#ffffff" width="48px" height="48px" />
               </div>
             )}
-            <span className="text-sm font-bold text-black">
+            <span className="w-full truncate text-center text-xs font-bold text-black">
               {scorableLabel(option.scorable)}
             </span>
           </button>

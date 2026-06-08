@@ -1,22 +1,22 @@
 const getColor = (color: string) => {
   switch (color) {
     case "red":
-      return "#FF2929";
+      return "#C00707";
 
     case "blue":
-      return "#0014FF";
+      return "#0055DA";
 
     case "yellow":
-      return "#FFE31A";
+      return "#D8D365";
 
     case "green":
       return "#16C47F";
 
     case "black":
-      return "#030303";
+      return "#2C3947";
 
     case "pink":
-      return "#E53888";
+      return "#FF97D0";
   }
 };
 

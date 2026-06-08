@@ -16,7 +16,7 @@ const SoundToggle = () => {
       type="button"
       onClick={toggle}
       aria-label={muted ? "Activar sonido" : "Silenciar"}
-      className="fixed left-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full border-2 border-secondary bg-primary text-accent"
+      className="fixed left-3 top-[calc(env(safe-area-inset-top,0px)+0.75rem)] z-30 flex h-11 w-11 items-center justify-center rounded-full border-2 border-secondary bg-primary text-accent"
     >
       {muted ? (
         <VolumeX width="18px" height="18px" />

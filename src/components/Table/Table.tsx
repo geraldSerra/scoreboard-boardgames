@@ -1,4 +1,4 @@
-import Meeple from "../../assets/Icons/Meeple";
+import Meeple3D from "../Meeple3D/Meeple3D";
 import Road from "../../assets/Icons/Road";
 import City from "../../assets/Icons/City";
 import Monastery from "../../assets/Icons/Monastery";
@@ -7,7 +7,6 @@ import Field from "../../assets/Icons/Field";
 import ScoringOptionType from "../../types/scoringOptionType";
 import ScoringPlayerType from "../../types/scoringPlayerType";
 import FinalScreen from "../FinalScreen/FinalScreen";
-import getColor from "../../utils/getColor";
 import scorableLabel from "../../utils/scorableLabel";
 import X from "../../assets/Icons/X";
 
@@ -65,10 +64,10 @@ const Table: React.FC<{
             {scoringPlayers.map((player: ScoringPlayerType) => (
               <th key={player.playerId} className="h-[60px] text-base">
                 <div className="flex flex-col items-center">
-                  <Meeple
-                    color={getColor(player.color)}
-                    width={"24px"}
-                    height={"24px"}
+                  <Meeple3D
+                    color={player.color}
+                    width={"28px"}
+                    height={"28px"}
                   />
                   {
                     totalArray.filter(
@@ -110,11 +109,11 @@ const Table: React.FC<{
               {scoringPlayers
                 .filter((p) => item.playersId.includes(p.playerId))
                 .map((p) => (
-                  <Meeple
+                  <Meeple3D
                     key={p.playerId}
-                    color={getColor(p.color)}
-                    width={"16px"}
-                    height={"16px"}
+                    color={p.color}
+                    width={"20px"}
+                    height={"20px"}
                   />
                 ))}
             </div>
@@ -195,17 +194,15 @@ const Table: React.FC<{
             {finalScore.map((item: any, index: number) => {
               return (
                 <tr
-                  className={`flex h-[60px] items-center justify-between ${
-                    index === 0
-                      ? "h-[60px] border-[3px] border-[#f7c566] bg-[#ffe4c4] text-[18px]"
-                      : ""
+                  className={`flex h-[52px] items-center justify-between border-b border-graysoft/50 last:border-b-0 ${
+                    index % 2 === 1 ? "bg-black/[0.03]" : ""
                   }`}
                 >
                   <td className="flex flex-1 items-center justify-center">
-                    <Meeple
-                      color={getColor(item.color)}
-                      width="24px"
-                      height="24px"
+                    <Meeple3D
+                      color={item.color}
+                      width="28px"
+                      height="28px"
                     />
                   </td>
                   {options.map((option: ScoringOptionType) => {

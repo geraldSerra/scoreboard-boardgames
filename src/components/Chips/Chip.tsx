@@ -1,7 +1,6 @@
 import { memo } from "react";
 import { Crown } from "lucide-react";
-import Meeple from "../../assets/Icons/Meeple";
-import getColor from "../../utils/getColor";
+import Meeple3D from "../Meeple3D/Meeple3D";
 
 type ChipProps = {
   color: string;
@@ -49,7 +48,7 @@ const Chip = memo(
         }`}
       >
         <div className="flex items-center gap-3 px-3 py-2">
-          <Meeple color={getColor(color)} width={"34px"} height={"34px"} />
+          <Meeple3D color={color} width={"38px"} height={"38px"} />
 
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold text-white">

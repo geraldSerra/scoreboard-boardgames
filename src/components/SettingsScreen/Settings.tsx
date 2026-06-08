@@ -5,6 +5,7 @@ import PlayerRow, { COLORS_OPTIONS } from "../PlayerRow/PlayerRow";
 import ExpansionSelector from "../Expansions/ExpansionSelector";
 import Stepper from "../Stepper/Stepper";
 import Switch from "../Switch/Switch";
+import Button from "../Button/Button";
 import Expansion from "../../types/expansionType";
 import { cloneExpansions } from "../../data/expansions";
 
@@ -199,52 +200,86 @@ const SelectPlayers = ({ handleSettings, initialConfig }: any) => {
         )}
 
         {step === 2 && (
-          <SelectTime
-            time={timeOfPlayers}
-            handleSelect={handleTime}
-            enabled={timerEnabled}
-            onToggleEnabled={() => setTimerEnabled((v) => !v)}
-          />
+          <div className="flex flex-col gap-[15px]">
+            <SelectTime
+              time={timeOfPlayers}
+              handleSelect={handleTime}
+              enabled={timerEnabled}
+              onToggleEnabled={() => setTimerEnabled((v) => !v)}
+            />
+
+            <div className="box-border flex w-full flex-col gap-3 rounded-[20px] bg-black/30 p-[15px]">
+              <div className="text-sm font-bold text-graysoft">Resumen</div>
+
+              <div className="flex flex-col gap-2">
+                {players.map((player, index) => (
+                  <div key={player.playerId} className="flex items-center gap-2">
+                    <span
+                      className="h-4 w-4 shrink-0 rounded-full border border-white/40"
+                      style={{ backgroundColor: player.color || "#888" }}
+                    />
+                    <span className="truncate text-[15px]">
+                      {player.name.trim() || `Jugador ${index + 1}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="h-px w-full bg-white/10" />
+
+              <div className="flex items-start justify-between gap-3 text-[14px]">
+                <span className="text-graysoft">Expansiones</span>
+                <span className="text-right">
+                  {expansions
+                    .filter((expansion) => expansion.enabled)
+                    .map((expansion) => expansion.name)
+                    .join(", ") || "Solo juego base"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 text-[14px]">
+                <span className="text-graysoft">Puntuación</span>
+                <span>{advancedScoring ? "Avanzada" : "Manual"}</span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 text-[14px]">
+                <span className="text-graysoft">Tiempo</span>
+                <span>
+                  {timerEnabled ? `${timeOfPlayers} min por jugador` : "Sin límite"}
+                </span>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       <div className="flex items-center gap-3 pt-2">
         {step > 0 && (
-          <button
-            type="button"
-            onClick={handleBack}
-            className="flex h-[52px] items-center justify-center rounded-[12px] border-2 border-secondary px-6 font-bold text-graysoft transition-colors"
-          >
+          <Button variant="outline" dark onClick={handleBack} className="px-6">
             Atrás
-          </button>
+          </Button>
         )}
 
         {step < STEPS.length - 1 ? (
-          <button
-            type="button"
-            onClick={handleNext}
+          <Button
+            variant="primary"
+            dark
             disabled={!canGoNext}
-            className={`flex h-[52px] flex-1 items-center justify-center rounded-[12px] text-[18px] font-bold transition-all ${
-              canGoNext
-                ? "bg-accent text-primary"
-                : "cursor-not-allowed border-2 border-secondary bg-transparent text-graysoft"
-            }`}
+            onClick={handleNext}
+            className="flex-1"
           >
             Siguiente
-          </button>
+          </Button>
         ) : (
-          <button
-            type="button"
-            onClick={handleStart}
+          <Button
+            variant="primary"
+            dark
             disabled={!isReadyToStart}
-            className={`flex h-[52px] flex-1 items-center justify-center rounded-[12px] text-[20px] font-bold tracking-wide transition-all ${
-              isReadyToStart
-                ? "bg-accent text-primary"
-                : "cursor-not-allowed border-2 border-secondary bg-transparent text-graysoft"
-            }`}
+            onClick={handleStart}
+            className="flex-1"
           >
             EMPEZAR
-          </button>
+          </Button>
         )}
       </div>
     </div>

@@ -1,5 +1,4 @@
-import Meeple from "../../assets/Icons/Meeple";
-import getColor from "../../utils/getColor";
+import Meeple3D from "../Meeple3D/Meeple3D";
 import Player from "../../types/playerType";
 import ScoreType from "../../types/scoreType";
 
@@ -48,7 +47,7 @@ const Podium = ({ players, score }: PodiumProps) => {
           <div className="w-7 shrink-0 text-center text-lg font-bold">
             {p.rank <= 3 ? MEDALS[p.rank - 1] : p.rank}
           </div>
-          <Meeple color={getColor(p.color)} width="28px" height="28px" />
+          <Meeple3D color={p.color} width="34px" height="34px" />
           <span className="min-w-0 flex-1 truncate font-bold">{p.name}</span>
           {p.rank !== 1 && leader - p.total > 0 && (
             <span className="text-xs font-semibold text-graysoft">

@@ -1,8 +1,11 @@
 import { useCallback } from "react";
+import { Flag } from "lucide-react";
 import Player from "../../types/playerType";
 import Chip from "../Chips/Chip";
 import Timer from "../Timer/Timer";
-import ActionButton from "../ActionButton/ActionButton";
+import Pause from "../../assets/Icons/Pause";
+import Play from "../../assets/Icons/Play";
+import Score from "../../assets/Icons/Score";
 import GameConfig from "../../types/gameConfigType";
 import useWakeLock from "../../hooks/useWakeLock";
 import vibrate from "../../utils/haptics";
@@ -136,21 +139,37 @@ const InGameScreen = ({
           isPaused={isPaused}
         />
       </div>
-      <div className="mb-10 flex flex-col items-center gap-4">
-        <div className="flex gap-[100px]">
-          <ActionButton
-            variant="pause"
-            action={isPaused}
+      <div className="mb-10 flex w-full max-w-[420px] flex-col gap-3">
+        <div className="flex w-full gap-3">
+          <button
+            type="button"
             onClick={handleTogglePause}
-            width="30px"
-          />
-          <ActionButton variant="score" onClick={handleOpenScore} width="30px" />
+            className="flex h-[54px] flex-1 items-center justify-center gap-2 rounded-[14px] bg-white text-[17px] font-bold text-primary"
+          >
+            {isPaused ? (
+              <Play color="#0b192c" width="24px" height="24px" />
+            ) : (
+              <Pause color="#0b192c" width="24px" height="24px" />
+            )}
+            {isPaused ? "Continuar" : "Pausar"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenScore}
+            className="flex h-[54px] flex-1 items-center justify-center gap-2 rounded-[14px] bg-accent text-[18px] font-bold text-primary"
+          >
+            <Score color="#0b192c" width="26px" height="26px" />
+            Puntuar
+          </button>
         </div>
+
         <button
           type="button"
           onClick={onFinish}
-          className="rounded-full border border-secondary px-4 py-1.5 text-xs font-semibold text-accent"
+          className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] bg-lightgray text-[17px] font-bold text-[#E72929]"
         >
+          <Flag width="22px" height="22px" color="#E72929" />
           Terminar juego
         </button>
         </div>

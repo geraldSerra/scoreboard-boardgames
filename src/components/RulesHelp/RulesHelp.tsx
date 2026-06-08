@@ -43,7 +43,7 @@ const RulesHelp = () => {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Reglas de puntuación"
-        className="fixed right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full border-2 border-secondary bg-primary text-lg font-bold text-accent"
+        className="fixed right-3 top-[calc(env(safe-area-inset-top,0px)+0.75rem)] z-30 flex h-11 w-11 items-center justify-center rounded-full border-2 border-secondary bg-primary text-lg font-bold text-accent"
       >
         ?
       </button>

@@ -6,6 +6,7 @@ import ScoringPoints from "../ScoringPoints/ScoringPoints";
 import QuickPresets from "../QuickPresets/QuickPresets";
 import Podium from "../Podium/Podium";
 import Table from "../Table/Table";
+import Button from "../Button/Button";
 //Types
 import ScoringOptionType from "../../types/scoringOptionType";
 import Player from "../../types/playerType";
@@ -163,8 +164,9 @@ const ScoreBoard = ({
   };
 
   return (
-    <div className="flex h-full w-full max-w-[100vw] flex-col gap-5 overflow-y-auto overflow-x-hidden rounded-t-[20px] bg-white py-5 text-black">
-      <div className="mx-[15px] mb-5 mt-10 text-[30px] font-bold">
+    <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden bg-white text-black">
+      <div className="mx-auto flex w-full max-w-[480px] flex-col gap-5 pb-8 pt-6">
+      <div className="mx-[15px] mb-2 pr-12 text-[28px] font-bold">
         {mode === "gameFinished"
           ? "Puntuación final"
           : isEndgame
@@ -201,26 +203,32 @@ const ScoreBoard = ({
                     defaultCompleted={!isEndgame}
                   />
                 ) : (
-                  <>
+                  <ScoringPoints
+                    points={scoringPoints}
+                    setScoringPoints={setScoringPoints}
+                  />
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={!readyToScore()}
+                    className={`flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-[12px] text-[17px] font-bold ${
+                      readyToScore()
+                        ? "bg-black text-white"
+                        : "cursor-not-allowed border-2 border-lightgray bg-transparent text-graysoft"
+                    }`}
+                    onClick={() => handleSummit()}
+                  >
+                    Sumar puntos{scoringPoints ? ` (+${scoringPoints})` : ""}
+                  </button>
+
+                  {!advancedScoring && !isEndgame && (
                     <QuickPresets
                       scorable={selectedScorable}
                       onPick={(value) => commitScore(value)}
+                      disabled={!!scoringPoints}
                     />
-                    <ScoringPoints
-                      points={scoringPoints}
-                      setScoringPoints={setScoringPoints}
-                    />
-                  </>
-                )}
-                <div
-                  className={`flex h-[50px] items-center justify-center whitespace-nowrap rounded-[10px] font-bold ${
-                    readyToScore()
-                      ? "bg-black/[0.785] text-white"
-                      : "border-2 border-lightgray bg-transparent text-graysoft"
-                  }`}
-                  onClick={() => handleSummit()}
-                >
-                  Sumar puntos{scoringPoints ? ` (+${scoringPoints})` : ""}
+                  )}
                 </div>
               </div>
             </>
@@ -243,41 +251,26 @@ const ScoreBoard = ({
 
       {isEndgame && (
         <div className="mx-[15px] mb-2 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={onShowResults}
-            className="flex h-[52px] items-center justify-center rounded-[12px] bg-accent text-[18px] font-bold text-primary"
-          >
+          <Button variant="primary" onClick={onShowResults}>
             Ver resultados
-          </button>
-          <button
-            type="button"
-            onClick={onCancelEndgame}
-            className="flex h-[52px] items-center justify-center rounded-[12px] border-2 border-secondary text-[16px] font-bold text-secondary"
-          >
+          </Button>
+          <Button variant="outline" onClick={onCancelEndgame}>
             Volver al juego
-          </button>
+          </Button>
         </div>
       )}
 
       {mode === "gameFinished" && (
         <div className="mx-[15px] mb-2 mt-2 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={onRematch}
-            className="flex h-[52px] items-center justify-center rounded-[12px] bg-accent text-[18px] font-bold text-primary"
-          >
+          <Button variant="primary" onClick={onRematch}>
             Revancha
-          </button>
-          <button
-            type="button"
-            onClick={onReconfigure}
-            className="flex h-[52px] items-center justify-center rounded-[12px] border-2 border-secondary text-[16px] font-bold text-secondary"
-          >
+          </Button>
+          <Button variant="outline" onClick={onReconfigure}>
             Cambiar configuración
-          </button>
+          </Button>
         </div>
       )}
+      </div>
     </div>
   );
 };
